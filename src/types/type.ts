@@ -1,6 +1,6 @@
 // --- Enums ---
 
-export type UserRole = "admin" | "student";
+export type UserRole = "admin" | "teacher" | "student";
 export type DocumentStatus = "pending" | "processing" | "completed" | "failed";
 export type DocumentType = "pdf" | "text" | "md";
 
@@ -72,6 +72,10 @@ export interface PasswordResetRequest {
 export interface PasswordResetConfirm {
     oob_code: string;
     new_password: string;
+}
+
+export interface UpdateProfileRequest {
+    display_name: string | null;
 }
 
 export interface SetRoleRequest {
@@ -175,6 +179,11 @@ export interface FlashcardGenerateResponse {
     cards: Flashcard[];
 }
 
+export interface FlashcardListResponse {
+    cards: Flashcard[];
+    total: number;
+}
+
 export interface ChatSource {
     subject: string;
     topic_path: string[];
@@ -217,4 +226,79 @@ export interface ChatMessageListResponse {
     messages: ChatMessageResponse[];
     next_cursor?: string | null;
     total: number;
+}
+
+// --- Quizzes ---
+
+export type QuizDifficulty = "easy" | "medium" | "hard";
+
+export interface QuizCitation {
+    chunk_id: string;
+    doc_id?: string | null;
+    quote?: string | null;
+}
+
+export interface QuizOption {
+    id: string;
+    text: string;
+}
+
+export interface QuizQuestion {
+    id: string;
+    question: string;
+    options: QuizOption[];
+}
+
+export interface QuizGenerateRequest {
+    topic: string;
+    subject?: string | null;
+    difficulty: QuizDifficulty;
+    num_questions: number;
+}
+
+export interface QuizSummary {
+    id: string;
+    title: string;
+    topic: string;
+    subject?: string | null;
+    difficulty: QuizDifficulty;
+    num_questions: number;
+    created_at: string;
+    attempts_count: number;
+    best_score?: number | null;
+    last_score?: number | null;
+}
+
+export interface QuizDetail extends QuizSummary {
+    questions: QuizQuestion[];
+}
+
+export interface QuizListResponse {
+    quizzes: QuizSummary[];
+    total: number;
+}
+
+export interface QuizAttemptRequest {
+    answers: Record<string, string>;
+}
+
+export interface QuizQuestionResult {
+    question_id: string;
+    question: string;
+    options: QuizOption[];
+    selected_option_id?: string | null;
+    correct_option_id: string;
+    is_correct: boolean;
+    explanation: string;
+    citations: QuizCitation[];
+}
+
+export interface QuizAttemptResponse {
+    attempt_id: string;
+    quiz_id: string;
+    score: number;
+    total: number;
+    percentage: number;
+    results: QuizQuestionResult[];
+    created_at: string;
 }

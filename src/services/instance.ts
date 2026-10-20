@@ -55,6 +55,13 @@ const processQueue = (error: unknown, token: string | null = null): void => {
     failedQueue = [];
 };
 
+declare module "axios" {
+    interface AxiosRequestConfig {
+        // Set when the caller shows its own inline error, so the global toast doesn't duplicate it
+        silent?: boolean;
+    }
+}
+
 // Extend AxiosRequestConfig to support retry flag
 interface RetryableRequestConfig extends AxiosRequestConfig {
     _retry?: boolean;
@@ -160,6 +167,9 @@ instance.interceptors.response.use(
         }
 
         // Show error toast for all non-401 errors (and 401 on login/refresh)
+        if (originalRequest?.silent) {
+            return Promise.reject(err);
+        }
         if (err.response) {
             toast.error(getErrorMessage(err));
         } else {

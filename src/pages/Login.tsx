@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field"
+import AuthLayout from "@/components/AuthLayout"
 import AuthService from "@/services/authService"
 import { loginSchema, type LoginSchema } from "@/schemas/authSchemas"
 
@@ -39,10 +40,12 @@ export default function Login() {
     }
 
     return (
-        <main className="flex min-h-screen items-center justify-center p-4">
-            <Card className="w-full max-w-md">
+        <AuthLayout>
+            <Card className="w-full max-w-md shadow-sm">
                 <CardHeader>
-                    <CardTitle>Welcome back</CardTitle>
+                    <CardTitle>
+                        <h1 className="text-2xl font-semibold">Welcome back</h1>
+                    </CardTitle>
                     <CardDescription>Sign in to continue with StudyBuddy.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -122,6 +125,6 @@ export default function Login() {
                     </Field>
                 </CardFooter>
             </Card>
-        </main>
+        </AuthLayout>
     )
 }

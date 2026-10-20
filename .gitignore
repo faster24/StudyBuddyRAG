@@ -25,3 +25,6 @@ dist-ssr
 
 .env
 .sisyphus/
+
+# Backend lives in its own repository
+nerd-RAG-backend/

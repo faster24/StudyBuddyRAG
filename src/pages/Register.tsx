@@ -9,6 +9,7 @@ import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} f
 import {Input} from "@/components/ui/input"
 import {Spinner} from "@/components/ui/spinner"
 import {registerSchema, type RegisterSchema} from "@/schemas/authSchemas"
+import AuthLayout from "@/components/AuthLayout"
 import AuthService from "@/services/authService"
 import {Field, FieldError, FieldGroup, FieldLabel} from "@/components/ui/field"
 
@@ -46,10 +47,12 @@ export default function Register() {
     }
 
     return (
-        <main className="flex min-h-screen items-center justify-center p-4">
-            <Card className="w-full max-w-md">
+        <AuthLayout>
+            <Card className="w-full max-w-md shadow-sm">
                 <CardHeader>
-                    <CardTitle>Create your account</CardTitle>
+                    <CardTitle>
+                        <h1 className="text-2xl font-semibold">Create your account</h1>
+                    </CardTitle>
                     <CardDescription>Set up StudyBuddy in a minute.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -184,6 +187,6 @@ export default function Register() {
                     </Field>
                 </CardFooter>
             </Card>
-        </main>
+        </AuthLayout>
     )
 }

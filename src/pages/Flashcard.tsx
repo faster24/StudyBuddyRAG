@@ -2,13 +2,16 @@ import { useCallback, useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { Layers3 } from "lucide-react";
 
+import Markdown from "@/components/Markdown";
+import PageHeader from "@/components/PageHeader";
+
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { Textarea } from "@/components/ui/textarea";
+import { getErrorMessage } from "@/lib/errors";
 import AuthService from "@/services/authService";
 import FlashcardService from "@/services/flashcardService";
 import type { Flashcard as FlashcardItem } from "@/types/type.ts";
@@ -75,10 +78,10 @@ export default function FlashcardPage() {
             });
             setCards(response.cards);
             setRevealedCardIds(new Set());
-        } catch {
+        } catch (error) {
             setCards([]);
             setRevealedCardIds(new Set());
-            setGenerateError("Flashcard generation failed. Please try again.");
+            setGenerateError(getErrorMessage(error, "Flashcard generation failed. Please try again."));
         } finally {
             setIsGenerating(false);
         }
@@ -100,15 +103,11 @@ export default function FlashcardPage() {
 
     return (
         <main className="w-full space-y-6">
-            <header className="space-y-1">
-                <h1 className="flex items-center gap-2 text-2xl font-semibold">
-                    <Layers3 className="h-5 w-5 text-primary" />
-                    Flashcards
-                </h1>
-                <p className="text-sm text-muted-foreground">
-                    Generate study flashcards from your learning context.
-                </p>
-            </header>
+            <PageHeader
+                icon={Layers3}
+                title="Flashcards"
+                description="Generate study cards from your notes and the question bank, then test yourself."
+            />
 
             <Card>
                 <CardHeader>
@@ -145,6 +144,9 @@ export default function FlashcardPage() {
                         </section>
                         <datalist id="flashcard-mode-options">
                             <option value="adaptive" />
+                            <option value="quick" />
+                            <option value="deep" />
+                            <option value="exam" />
                         </datalist>
 
                         <section className="grid gap-4 md:grid-cols-2">
@@ -237,7 +239,7 @@ export default function FlashcardPage() {
                                         </div>
 
                                         <div className="rounded-xl border border-border/70 bg-card/90 p-4">
-                                            <p className="text-base font-medium leading-relaxed md:text-lg">{card.question}</p>
+                                            <Markdown className="text-base font-medium md:text-lg">{card.question}</Markdown>
                                         </div>
 
                                         {card.concept_tags.length > 0 ? (
@@ -254,25 +256,28 @@ export default function FlashcardPage() {
                                             <section className="space-y-3 rounded-xl border border-primary/30 bg-primary/5 p-4 animate-in fade-in-50 duration-200">
                                                 <div className="space-y-1">
                                                     <p className="text-xs font-semibold uppercase tracking-wide text-primary">Answer</p>
-                                                    <p className="text-sm font-medium leading-relaxed">{card.answer}</p>
+                                                    <Markdown className="text-sm font-medium">{card.answer}</Markdown>
                                                 </div>
 
-                                                <div className="space-y-1">
-                                                    <p className="text-xs font-semibold uppercase tracking-wide text-primary">Explanation</p>
-                                                    <Textarea value={card.explanation} readOnly className="min-h-24 resize-none bg-background/90" />
-                                                </div>
+                                                {card.explanation ? (
+                                                    <div className="space-y-1">
+                                                        <p className="text-xs font-semibold uppercase tracking-wide text-primary">Explanation</p>
+                                                        <Markdown className="text-sm text-muted-foreground">{card.explanation}</Markdown>
+                                                    </div>
+                                                ) : null}
 
                                                 {card.citations.length > 0 ? (
                                                     <details className="rounded-md border border-border/60 bg-background/70 p-3">
                                                         <summary className="cursor-pointer text-xs font-medium uppercase tracking-wide text-muted-foreground">
-                                                            Citations
+                                                            Sources ({card.citations.length})
                                                         </summary>
-                                                        <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                                                        <ul className="mt-2 space-y-2 text-xs text-muted-foreground">
                                                             {card.citations.map((citation, index) => (
-                                                                <li key={`${card.card_id}-${citation.chunk_id}-${index}`}>
-                                                                    chunk: {citation.chunk_id}
-                                                                    {citation.doc_id ? ` | doc: ${citation.doc_id}` : ""}
-                                                                    {citation.quote ? ` | quote: ${citation.quote}` : ""}
+                                                                <li key={`${card.card_id}-${citation.chunk_id}-${index}`} className="space-y-0.5">
+                                                                    <p className="font-medium text-foreground">
+                                                                        {citation.doc_id ? "Your uploaded notes" : "Exam question bank"}
+                                                                    </p>
+                                                                    {citation.quote ? <p className="break-words italic">&ldquo;{citation.quote}&rdquo;</p> : null}
                                                                 </li>
                                                             ))}
                                                         </ul>

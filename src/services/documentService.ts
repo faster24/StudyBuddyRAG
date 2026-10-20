@@ -17,6 +17,7 @@ const DocumentService = {
 
         const {data} = await instance.post<DocumentResponse>("/documents/upload", formData, {
             headers: {"Content-Type": "multipart/form-data"},
+            silent: true,
         });
         return data;
     },
@@ -34,7 +35,7 @@ const DocumentService = {
     },
 
     list: async (): Promise<DocumentListResponse> => {
-        const {data} = await instance.get<DocumentListResponse>("/documents");
+        const {data} = await instance.get<DocumentListResponse>("/documents", {silent: true});
         return data;
     },
 
@@ -44,7 +45,7 @@ const DocumentService = {
     },
 
     delete: async (documentId: string): Promise<void> => {
-        await instance.delete(`/documents/${documentId}`);
+        await instance.delete(`/documents/${documentId}`, {silent: true});
     },
 
     getChunks: async (documentId: string): Promise<DocumentChunksResponse> => {

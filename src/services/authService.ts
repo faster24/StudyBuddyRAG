@@ -8,6 +8,7 @@ import type {
     MessageResponse,
     DashboardResponse,
     SetRoleRequest,
+    UpdateProfileRequest,
     User,
 } from "../types/type.ts";
 import instance from "./instance";
@@ -57,7 +58,12 @@ const AuthService = {
     },
 
     updateUserRole: async (uid: string, payload: SetRoleRequest): Promise<MessageResponse> => {
-        const {data} = await instance.put<MessageResponse>(`/auth/users/${uid}/role`, {role_data: payload});
+        const {data} = await instance.put<MessageResponse>(`/auth/users/${uid}/role`, payload);
+        return data;
+    },
+
+    updateProfile: async (payload: UpdateProfileRequest): Promise<User> => {
+        const {data} = await instance.patch<User>("/auth/me", payload, {silent: true});
         return data;
     },
 

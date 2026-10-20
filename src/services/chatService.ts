@@ -4,12 +4,13 @@ import type {
     ChatMessageResponse,
     ChatSessionCreateRequest,
     ChatSessionResponse,
+    MessageResponse,
 } from "@/types/type.ts";
 import instance from "./instance";
 
 const ChatService = {
     createSession: async (payload?: ChatSessionCreateRequest): Promise<ChatSessionResponse> => {
-        const { data } = await instance.post<ChatSessionResponse>("/chat/sessions", payload);
+        const { data } = await instance.post<ChatSessionResponse>("/chat/sessions", payload, { silent: true });
         return data;
     },
 
@@ -33,7 +34,7 @@ const ChatService = {
 
         const { data } = await instance.get<ChatMessageListResponse>(
             `/chat/sessions/${sessionId}/messages`,
-            queryParams,
+            { ...queryParams, silent: true },
         );
         return data;
     },
@@ -45,7 +46,13 @@ const ChatService = {
         const { data } = await instance.post<ChatMessageResponse>(
             `/chat/sessions/${sessionId}/messages`,
             payload,
+            { silent: true },
         );
+        return data;
+    },
+
+    deleteSession: async (sessionId: string): Promise<MessageResponse> => {
+        const { data } = await instance.delete<MessageResponse>(`/chat/sessions/${sessionId}`, { silent: true });
         return data;
     },
 };
