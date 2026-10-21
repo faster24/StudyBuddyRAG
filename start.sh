@@ -34,6 +34,23 @@ if [[ ! -f "$BACKEND_DIR/.env" ]]; then
     exit 1
 fi
 
+# Local MongoDB (Atlas Local image) must be up before the backend connects
+MONGO_CONTAINER="${MONGO_CONTAINER:-studybuddy-mongo}"
+if command -v docker >/dev/null && docker inspect "$MONGO_CONTAINER" >/dev/null 2>&1; then
+    if [[ "$(docker inspect -f '{{.State.Running}}' "$MONGO_CONTAINER")" != true ]]; then
+        echo "Starting MongoDB container ($MONGO_CONTAINER)..."
+        docker start "$MONGO_CONTAINER" >/dev/null
+    fi
+    for _ in $(seq 1 30); do
+        health="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}healthy{{end}}' "$MONGO_CONTAINER")"
+        [[ "$health" == healthy ]] && break
+        sleep 2
+    done
+    echo "MongoDB: $health"
+else
+    echo "Warning: MongoDB container '$MONGO_CONTAINER' not found; make sure MONGODB_URI is reachable."
+fi
+
 if [[ ! -d "$VENV_DIR" ]]; then
     echo "Creating Python virtual environment..."
     python3 -m venv "$VENV_DIR"
