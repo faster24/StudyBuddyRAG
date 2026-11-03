@@ -59,7 +59,7 @@ The first backend start downloads the embedding model (about 90 MB), so you need
 ### 1. Clone both repositories
 
 ```bash
-git clone https://github.com/akkminn/studybuddy-frontend.git StuddyBuddyRAG
+git clone https://github.com/faster24/StudyBuddyRAG.git StuddyBuddyRAG
 cd StuddyBuddyRAG
 git clone https://github.com/faster24/nerd-RAG-backend.git nerd-RAG-backend
 ```
